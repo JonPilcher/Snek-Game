@@ -31,6 +31,7 @@ Game::Game( MainWindow& wnd )
 	snek({19,14}),
 	goal(rng,brd,snek)
 {
+	title.Play();
 }
 
 void Game::Go()
@@ -107,6 +108,7 @@ void Game::UpdateModel()
 					if (eating)
 					{
 						snek.Grow();
+						coin.Play();
 						if (SCC >= SCCMax)
 						{
 							SCC = 0;

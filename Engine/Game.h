@@ -28,6 +28,7 @@
 #include "Goal.h"
 #include <random>
 #include "FrameTimer.h"
+#include "Sound.h"
 
 
 class Game
@@ -62,5 +63,7 @@ private:
 	int snekMoveCounter = 0;
 	bool gameIsOver = false;
 	bool gameIsStarted = false;
+	Sound coin = Sound({ L"Sounds\\coin.wav" });
+	Sound title = Sound({ L"Sounds\\title.wav" });
 	/********************************/
 };

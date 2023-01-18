@@ -22,16 +22,20 @@
 #include "Game.h"
 #include "SpriteCodex.h"
 
-Game::Game( MainWindow& wnd )
+Game::Game(MainWindow& wnd)
 	:
-	wnd( wnd ),
-	gfx( wnd ),
-	brd( gfx ),
+	wnd(wnd),
+	gfx(wnd),
+	brd(gfx),
 	rng(std::random_device()()),
-	snek({19,14}),
-	goal(rng,brd,snek)
+	snek({ 19,14 }),
+	goal(rng, brd, snek)
 {
 	title.Play();
+	for (int i = 0; i < 20;i++)
+	{
+		brd.SpawnPoison(rng, snek, goal);
+	}
 }
 
 void Game::Go()
@@ -98,6 +102,7 @@ void Game::UpdateModel()
 			const Location next = snek.GetNextHeadLocation(delta_loc);
 				if (!brd.IsInsideBoard(next) ||
 					snek.IsInTileExceptEnd(next)||
+					brd.CheckForObstacle(next)||
 					snek.IsSnakeFull())
 				{
 					gameIsOver = true;
@@ -109,21 +114,23 @@ void Game::UpdateModel()
 					{
 						snek.Grow();
 						coin.Play();
-						if (SCC >= SCCMax)
+					}
+						if (brd.CheckForPoison(next))//(SCC >= SCCMax)
 						{
-							SCC = 0;
+							//SCC = 0;
 							--snekMovePeriod;
 							if (snekMovePeriod <= snekMoveMin)
 							{
 								snekMovePeriod = snekMoveMin;
 							}
 						}
-						++SCC;
-					}
+						//++SCC;
+					
 					snek.MoveBy(delta_loc);
 					if (eating)
 					{
 						goal.Respawn(rng, brd, snek);
+						brd.SpawnObstacle(rng, snek, goal);
 					}
 				}
 		}
@@ -141,8 +148,10 @@ void Game::ComposeFrame()
 	else
 	{
 		brd.DrawBorder();
+		brd.DrawPoison();
 		snek.Draw(brd);
 		goal.Draw(brd);
+		brd.DrawObstacles();
 		if (gameIsOver)
 		{
 			SpriteCodex::DrawGameOver(350, 265, gfx);
